@@ -2,8 +2,15 @@ import React from 'react';
 
 import Year from '../Year';
 import Countries from '../Countries';
+import ErrorBoundary from '../ErrorBoundary';
 
-export default class App extends React.Component {
+export default function() {
+  return (
+    <ErrorBoundary><App /></ErrorBoundary>
+  )
+}
+
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
