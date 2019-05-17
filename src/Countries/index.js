@@ -1,16 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 
-export default class Countries extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      countries: []
-    };
+export default function Countries({ changeCb, selected }) {
+  const [countries, setCountries] = useState([])
 
-    this.changeCountry = this.changeCountry.bind(this);
-  }
-  componentWillMount() {
-    const url = 'http://54.72.28.201/1.0/countries';
+  useEffect(() => {
+    const url = 'http://54.72.28.201/1.0/countries'
     fetch(url, {
       headers: {
         accept: 'application/json; charset=utf=8'
@@ -18,35 +12,34 @@ export default class Countries extends React.Component {
     })
       .then((res) => res.json())
       .then((json) => {
-        this.setState({
-          countries: ['', ...json.countries]
-        });
+        setCountries(['', ...json.countries])
       })
       .catch((err) => {
-        console.log(err);
-      });
+        console.log(err)
+      })
+  }, [])
+
+  const changeCountry = (e) => {
+    changeCb(e.target.value)
   }
-  changeCountry(e) {
-    this.setState({
-      selected: e.target.value
-    });
-    this.props.changeCb(e.target.value);
-  }
-  render() {
-    const { countries, selected } = this.state;
-    return (
-      <div className="col">
-        <label htmlFor="country">Select Country</label>
-        <select value={selected} onChange={this.changeCountry} className="custom-select" id="country">
-          {countries.map((item) => {
-            return (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-    );
-  }
+
+  return (
+    <div className="col">
+      <label htmlFor="country">Select Country</label>
+      <select
+        value={selected}
+        onChange={changeCountry}
+        className="custom-select"
+        id="country"
+      >
+        {countries.map((item) => {
+          return (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          )
+        })}
+      </select>
+    </div>
+  )
 }
