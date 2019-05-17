@@ -1,42 +1,40 @@
-import React from 'react';
+import React from 'react'
 
-import Year from '../Year';
-import Countries from '../Countries';
+import Year from '../Year'
+import Countries from '../Countries'
 
 export default class App extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       year: 2017,
       country: '',
       people: 0
-    };
-    this.changeInputs = this.changeInputs.bind(this);
-    this.getPopulation = this.getPopulation.bind(this);
+    }
+
+    this.changeInputs = this.changeInputs.bind(this)
+    this.getPopulation = this.getPopulation.bind(this)
+  }
+
+  componentDidUpdate(prevProp, prevState) {
+    const { year, country } = this.state
+    if (prevState.year !== year || prevState.country !== country)
+      this.getPopulation()
   }
 
   changeInputs({ year = this.state.year, country = this.state.country }) {
-    this.setState(
-      {
-        year,
-        country
-      },
-      () => {
-        this.getPopulation();
-      }
-    );
+    this.setState({ year, country })
   }
 
   getPopulation() {
-    const { year, country } = this.state;
-    if (!year || !country) return;
+    const { year, country } = this.state
+    if (!year || !country) return
 
-    const url = `http://54.72.28.201/1.0/population/${year}/${country}/`;
+    const url = `http://54.72.28.201/1.0/population/${year}/${country}/`
 
-    this.setState(
-      {
-        isLoading: true
-      },
+    this.setState({
+      isLoading: true
+    },
       () => {
         fetch(url, {
           headers: {
@@ -47,19 +45,20 @@ export default class App extends React.Component {
           .then((json) => {
             this.setState({
               people: json.reduce((total, item) => {
-                return total + item.total;
+                return total + item.total
               }, 0),
               isLoading: false
-            });
+            })
           })
           .catch((err) => {
-            console.log(err);
-          });
+            console.log(err)
+          })
       }
-    );
+    )
   }
+
   render() {
-    const { year, people, isLoading } = this.state;
+    const { year, people, isLoading } = this.state
     return (
       <div className="container mt-5 mx-auto">
         <div className="bg-white border border-dark p-5 rounded">
@@ -67,26 +66,23 @@ export default class App extends React.Component {
           <form className="row">
             <Countries
               changeCb={(country) => {
-                this.changeInputs({ country });
+                this.changeInputs({ country })
               }}
             />
             <Year
               selected={year}
               changeCb={(e) => {
-                this.changeInputs({ year: e.target.value });
+                this.changeInputs({ year: e.target.value })
               }}
             />
           </form>
           <div className="alert text-center h2">
-            {isLoading ? (
-              'Loading...'
-            ) : (
-                `${people.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}`
-              )}
+            {isLoading ? ('Loading...') : (
+              `${people.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}`
+            )}
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
-
